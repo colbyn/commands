@@ -1,0 +1,5 @@
+.stack-work/
+commands.cabal
+*~
+.commands.out.sh
+.commands.out.ref.sh

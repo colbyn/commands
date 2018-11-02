@@ -1,0 +1,102 @@
+name:                commands
+version:             0.1
+# github:              "githubuser/commands"
+license:             MIT
+author:              "Colbyn Wadman"
+# maintainer:          "example@example.com"
+copyright:           "2018 Colbyn Wadman"
+
+# extra-source-files:
+# - README.md
+# - ChangeLog.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+# description:         Please see the README on GitHub at <https://github.com/githubuser/commands#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+- async
+- bytestring
+- containers
+- mtl
+- stm
+- text
+- transformers
+- unordered-containers
+- vector
+- filepath
+- directory
+- unix
+- contravariant
+- contravariant-extras
+- show-prettyprint
+- wl-pprint-text
+- path
+- path-io
+- time
+- binary
+- deepseq
+- foldl
+- process
+- temporary
+- primitive
+- random
+- uuid
+- uuid-types
+- lens
+- megaparsec
+- core-libs
+- uniplate
+- neat-interpolation
+- recursion-schemes
+- cmdargs
+
+
+default-extensions:
+  - NoImplicitPrelude
+  - PartialTypeSignatures
+  - OverloadedStrings
+  - OverloadedLabels
+  - TypeOperators
+  - DataKinds
+  - LambdaCase
+  - MultiParamTypeClasses
+  - FunctionalDependencies
+  - FlexibleContexts
+  - FlexibleInstances
+  - TypeFamilies
+  - TypeApplications
+  - ScopedTypeVariables
+
+
+library:
+  source-dirs: src
+
+executables:
+  cmd:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - commands
+
+
+# tests:
+#   commands-test:
+#     main:                Spec.hs
+#     source-dirs:         test
+#     ghc-options:
+#     - -threaded
+#     - -rtsopts
+#     - -with-rtsopts=-N
+#     dependencies:
+#     - commands

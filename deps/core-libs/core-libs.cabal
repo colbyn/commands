@@ -1,0 +1,119 @@
+-- This file has been generated from package.yaml by hpack version 0.28.2.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: beb550e50e68cb22f0b51a33ed4b8b20f2d4a6982fbc72c9c64e9bb351027c53
+
+name:           core-libs
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/githubuser/core-libs#readme>
+homepage:       https://github.com/githubuser/core-libs#readme
+bug-reports:    https://github.com/githubuser/core-libs/issues
+author:         Author name here
+maintainer:     example@example.com
+copyright:      2018 Author name here
+license:        BSD3
+build-type:     Simple
+cabal-version:  >= 1.10
+
+source-repository head
+  type: git
+  location: https://github.com/githubuser/core-libs
+
+library
+  exposed-modules:
+      Core
+      Core.Class.Newtype
+      Core.Class.Renderable
+      Core.Class.Textual.Pretty
+      Core.Json.Utils
+      Core.Record
+      Core.Record.Dev
+      Core.Record.Internal
+      Core.Record.Util.Json
+      Core.Record.Util.Json.Joins
+      Core.Record.Util.Json.OldJoins
+  other-modules:
+      Paths_core_libs
+  hs-source-dirs:
+      core-src
+  default-extensions: NoImplicitPrelude PartialTypeSignatures OverloadedStrings OverloadedLabels TypeOperators DataKinds LambdaCase MultiParamTypeClasses FunctionalDependencies FlexibleContexts FlexibleInstances TypeFamilies TypeApplications ScopedTypeVariables
+  build-depends:
+      aeson
+    , async
+    , base >=4.7 && <5
+    , binary
+    , bytestring
+    , containers
+    , contravariant
+    , contravariant-extras
+    , deepseq
+    , directory
+    , filepath
+    , foldl
+    , mtl
+    , neat-interpolation
+    , path
+    , path-io
+    , primitive
+    , process
+    , random
+    , show-prettyprint
+    , stm
+    , template-haskell
+    , temporary
+    , text
+    , time
+    , transformers
+    , unix
+    , unordered-containers
+    , uuid
+    , uuid-types
+    , vector
+    , wl-pprint-text
+  default-language: Haskell2010
+
+test-suite core-libs-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_core_libs
+  hs-source-dirs:
+      test
+  default-extensions: NoImplicitPrelude PartialTypeSignatures OverloadedStrings OverloadedLabels TypeOperators DataKinds LambdaCase MultiParamTypeClasses FunctionalDependencies FlexibleContexts FlexibleInstances TypeFamilies TypeApplications ScopedTypeVariables
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , async
+    , base >=4.7 && <5
+    , binary
+    , bytestring
+    , containers
+    , contravariant
+    , contravariant-extras
+    , core-libs
+    , deepseq
+    , directory
+    , filepath
+    , foldl
+    , mtl
+    , neat-interpolation
+    , path
+    , path-io
+    , primitive
+    , process
+    , random
+    , show-prettyprint
+    , stm
+    , template-haskell
+    , temporary
+    , text
+    , time
+    , transformers
+    , unix
+    , unordered-containers
+    , uuid
+    , uuid-types
+    , vector
+    , wl-pprint-text
+  default-language: Haskell2010

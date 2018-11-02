@@ -1,0 +1,80 @@
+name:                core-libs
+version:             0.1.0.0
+github:              "githubuser/core-libs"
+license:             BSD3
+author:              "Author name here"
+maintainer:          "example@example.com"
+copyright:           "2018 Author name here"
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/githubuser/core-libs#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+- async
+- bytestring
+- containers
+- mtl
+- stm
+- text
+- transformers
+- unordered-containers
+- vector
+- filepath
+- directory
+- unix
+- contravariant
+- contravariant-extras
+- show-prettyprint
+- wl-pprint-text
+- path
+- path-io
+- time
+- binary
+- deepseq
+- foldl
+- process
+- aeson
+- temporary
+- primitive
+- random
+- uuid
+- uuid-types
+- neat-interpolation
+- template-haskell
+
+default-extensions:
+  - NoImplicitPrelude
+  - PartialTypeSignatures
+  - OverloadedStrings
+  - OverloadedLabels
+  - TypeOperators
+  - DataKinds
+  - LambdaCase
+  - MultiParamTypeClasses
+  - FunctionalDependencies
+  - FlexibleContexts
+  - FlexibleInstances
+  - TypeFamilies
+  - TypeApplications
+  - ScopedTypeVariables
+
+library:
+  source-dirs: core-src
+
+tests:
+  core-libs-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - core-libs
