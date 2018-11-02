@@ -96,7 +96,7 @@ symbol = L.symbol sc
 -------------------------------------------------------------------------------
 
 parser :: Parser [Ast]
-parser = someTill (fnP <* scn) eof
+parser = someTill (scn *> fnP <* scn) eof
   -- where
   --   item =
   --         try (eof >> return Nothing)
@@ -303,32 +303,6 @@ postProcess :: [Ast] -> [Ast]
 postProcess = id
 
 
--- multilineStrings :: Ast -> Ast
--- multilineStrings = Uni.transformBi f
---   where
---     f :: [Ast] -> [Ast]
---     f = g []
--- 
---     g :: [Ast] -> [Ast] -> [Ast]
---     g xs [] = xs
---     g xs (y:ys)
---       | pred y = case List.break pred ys of
---         (mids, Atom "\"\"\"" : rest) -> g (xs <> [Atom (stringify Text.empty mids)]) rest
---         -- (mids, xs) -> error $ show (mids, xs)
---       | otherwise = g (xs ++ [y]) ys
--- 
---     stringify :: Text -> [Ast]  -> Text
---     stringify xs [] = xs
---     stringify xs (Atom y:ys) = stringify (xs <> y) ys
--- 
---     matchToken :: [Ast] -> Maybe Int
---     matchToken = List.findIndex pred
--- 
---     pred :: Ast -> Bool
---     pred (Atom txt) = txt == "\"\"\""
---     pred _ = False
-
-
 
 
 
@@ -344,12 +318,12 @@ postProcess = id
 -- 
 --     p = multilineStringLiteral
 -- 
--- 
--- run :: IO ()
--- run = do
---   result <- parseContents "./Commands"
---   case result of
---     Left err -> Text.putStrLn err
---     Right x -> mapM_ PP.prettyPrint x
+
+run :: IO ()
+run = do
+  result <- parseContents "./Commands"
+  case result of
+    Left err -> Text.putStrLn err
+    Right x -> mapM_ PP.prettyPrint x
 
 

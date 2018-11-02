@@ -1,10 +1,13 @@
+###############################################################################
+# Database
+###############################################################################
+
 command db::init do
   # Since Postgres doesn’t support something like “CREATE DATABASE IF NOT EXISTS”,
   # well just run the following command and discard the the error it will produce
   # if already created via the `void do <code block>` function.
   void do
     createdb my-db
-
   
   psql -d my-db -tc
     """
@@ -20,3 +23,11 @@ command db::init do
 command db::teardown do
   echo "todo command db::teardown"
 
+
+
+###############################################################################
+# Utils
+###############################################################################
+
+command noop do
+  echo "done"
