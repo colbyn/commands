@@ -147,7 +147,8 @@ rewritesIO :: [Bash] -> IO [Bash]
 rewritesIO = Uni.transformBiM fromMacro
 
 rewritesPure :: [Bash] -> [Bash]
-rewritesPure = Uni.transformBi voidMacro
+rewritesPure xs = Uni.transformBi voidMacro xs
+  & Uni.transformBi runMacro
 
 -- | Run before rendering into text.
 finalize :: [Bash] -> [Bash]
@@ -189,6 +190,17 @@ inlineBlocksMacro (Def name body) = Def name (inline [] body)
       Block ss -> inline (xs <> ss) ys
       _ -> inline (xs <> [y]) ys
 inlineBlocksMacro x = x
+
+
+
+runMacro :: Bash -> Bash
+runMacro (Cmd "run" (String path : args)) = 
+  Cmd (Text.pack ['\"'] <> bashStringEscapes path <> Text.pack ['\"']) args
+runMacro (Cmd "run_" (String path : args)) = 
+  Op (Cmd (Text.pack ['\"'] <> bashStringEscapes path <> Text.pack ['\"']) args)
+    "&>"
+    (String "/dev/null")
+runMacro x = x
 
 
 

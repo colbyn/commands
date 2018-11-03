@@ -188,7 +188,7 @@ fnP = do
 doP :: Parser Ast
 doP = do
   ref <- lookAhead nextNewline
-  (_, args) <- indent Strict (fmap dec ref) (symbol "do") outro
+  (_, args) <- indent Strict (fmap dec ref) (symbol "do" <* notFollowedBy (satisfy (not . Char.isSpace))) outro
   let body = join args
   if null body
     then fancyFailure $ Set.fromList

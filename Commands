@@ -24,6 +24,17 @@ command db::teardown do
   echo "todo command db::teardown"
 
 
+###############################################################################
+# Frontend
+###############################################################################
+
+
+command docs do
+  pulp docs -- --format html
+  mkdir -p docs
+  rm -rf ./docs/generated-docs
+  mv ./generated-docs ./docs
+
 
 ###############################################################################
 # Utils
