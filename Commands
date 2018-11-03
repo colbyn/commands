@@ -32,6 +32,7 @@ command noop do
   echo "done"
 
 command run-chrome do
+  # Usually commands ending with an ‘_’ will redirect stdout/stderr to `/dev/null`.
   run_ "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
       --app=http://127.0.0.1:3000
       --auto-open-devtools-for-tabs
