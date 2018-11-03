@@ -239,7 +239,7 @@ renderPathCases' xs = "case" <+> "$1" <+> "in" <$$> P.indent 4 body <$$> "esac"
 
 bashStringEscapes :: Text -> Text
 bashStringEscapes txt = txt
-  & Text.replace "\\" (Text.pack ['\\', '\\'])
+  -- & Text.replace "\\" (Text.pack ['\\', '\\'])
   & Text.replace "\"" (Text.pack ['\\', '"'])
   & Text.replace "?" "\\?"
 
