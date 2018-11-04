@@ -149,6 +149,7 @@ rewritesIO = Uni.transformBiM fromMacro
 rewritesPure :: [Bash] -> [Bash]
 rewritesPure xs = Uni.transformBi voidMacro xs
   & Uni.transformBi runMacro
+  & Uni.transformBi bindMacro
 
 -- | Run before rendering into text.
 finalize :: [Bash] -> [Bash]
@@ -203,6 +204,10 @@ runMacro (Cmd "run_" (String path : args)) =
 runMacro x = x
 
 
+bindMacro :: Bash -> Bash
+bindMacro (Cmd name (String "<-" : String cmd : args)) =
+  InitLocal name $ Just $ Cmd cmd args
+bindMacro x = x
 
 
 
