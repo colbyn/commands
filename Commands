@@ -47,7 +47,7 @@ command test do
 
 command test::ops do
   echo "lorem ipsum"
-    | tee lorem.txt
+    | save lorem.txt
 
 
 

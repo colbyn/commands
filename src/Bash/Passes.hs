@@ -93,13 +93,20 @@ compile ast = do
 
 dryRun :: IO ()
 dryRun = do
+  result <- runCompiler
+  case result of
+    Left err -> Text.putStrLn err
+    Right (file, env) -> Text.putStrLn file
+
+
+
+debugRun :: IO ()
+debugRun = do
   parsed <- Syntax.compiler
   case parsed of
     Left err -> Text.putStrLn err
-    Right ast -> do
-      let (bash, env) = convert ast
-      out <- passes bash
-      mapM_ PP.prettyPrint out
+    Right ast ->
+      mapM_ PP.prettyPrint ast
 
 
 
@@ -167,7 +174,7 @@ rewritesPure :: [Bash] -> [Bash]
 rewritesPure xs = Uni.transformBi voidMacro xs
   & Uni.transformBi runMacro
   & Uni.transformBi bindMacro
-  & Uni.transformBi opsMacro
+  & Uni.transformBi saveFnMacro
 
 -- | Run before rendering into text.
 finalize :: [Bash] -> [Bash]
@@ -228,13 +235,12 @@ bindMacro (Cmd name (String "<-" : String cmd : args)) =
 bindMacro x = x
 
 
--- streamFnsMacro :: Bash -> Bash
--- streamFnsMacro = 
 
-opsMacro :: Bash -> Bash
-opsMacro (Op l "|" r) = Op l "|" r
-opsMacro x = x
-
+saveFnMacro :: Bash -> Bash
+saveFnMacro (Cmd "save" [path]) = Subshell
+  [ Op (Cmd "tee" [path]) ">" (String "/dev/null")
+  ]
+saveFnMacro x = x
 
 
 
