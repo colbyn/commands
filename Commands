@@ -44,3 +44,10 @@ command test do
   echo $lorem
   echo "done"
 
+
+command test::ops do
+  echo "lorem ipsum"
+    | tee lorem.txt
+
+
+

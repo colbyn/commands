@@ -1,8 +1,10 @@
--- This file has been generated from package.yaml by hpack version 0.28.2.
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: beb550e50e68cb22f0b51a33ed4b8b20f2d4a6982fbc72c9c64e9bb351027c53
+-- hash: 551e926e24d77b7584b17000b0736f251951bc34483157860e164ff38d317619
 
 name:           core-libs
 version:        0.1.0.0
@@ -14,7 +16,6 @@ maintainer:     example@example.com
 copyright:      2018 Author name here
 license:        BSD3
 build-type:     Simple
-cabal-version:  >= 1.10
 
 source-repository head
   type: git

@@ -1,5 +1,5 @@
 {-# LANGUAGE QuasiQuotes #-}
-module Commands.System where
+module Commands.Cli where
 
 
 import Core
@@ -38,9 +38,8 @@ import Data.Functor.Foldable as R
 
 
 -- + Local
-import Commands.Data
-import Commands.Compile (runCompiler)
-
+import qualified Bash.Data   as Bash
+import qualified Bash.Passes as Bash
 
 
 
@@ -58,12 +57,12 @@ runCli :: [Text] -> IO ()
 runCli args = case args of
   ["--bash-completion-script", "cmd"] -> Text.putStrLn autocompleteScript
   ("--bash-completion-index" : index : rest) -> do
-    result <- runCompiler
+    result <- Bash.runCompiler
     case result of
       Left err -> return ()
       Right (out, env) -> runPathAutocompletion env rest
   _ -> do
-    result <- runCompiler
+    result <- Bash.runCompiler
     case result of
       Left err -> Sys.hPrint Sys.stderr err
       Right (out, env) -> invoke (out, env) (Text.intercalate "::" args)
@@ -75,7 +74,7 @@ runCli args = case args of
 -------------------------------------------------------------------------------
 
 
-invoke :: (Text, Mappings) -> Text -> IO ()
+invoke :: (Text, Bash.Mappings) -> Text -> IO ()
 invoke (out, env) path = do
   Text.writeFile ".commands.out.sh" out
   run $ "bash .commands.out.sh " <> path
@@ -94,7 +93,7 @@ invoke (out, env) path = do
 -------------------------------------------------------------------------------
 
 
-runPathAutocompletion :: Mappings -> [Text] -> IO ()
+runPathAutocompletion :: Bash.Mappings -> [Text] -> IO ()
 runPathAutocompletion env raw = do
   mapM_ Text.putStrLn options
   where

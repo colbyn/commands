@@ -4,7 +4,7 @@
 {-# LANGUAGE DeriveTraversable #-}
 -- {-# LANGUAGE DeriveFoldable #-}
 -- {-# LANGUAGE TemplateHaskell #-}
-module Commands.Data where
+module Bash.Data where
 
 
 import Core
@@ -46,46 +46,6 @@ import qualified Data.Generics.Uniplate.Data as Uni
 import Text.PrettyPrint.Leijen.Text hiding ((<$>))
 import qualified Text.PrettyPrint.Leijen.Text as P
 
-
-
-
-data Ast
-  = Fn Text [Ast]
-  | Do [Ast]
-  | Atom Text
-  deriving (Show, Eq, Data, Typeable, Generic)
-
-
-data AstF a
-  = FnF Text [a]
-  | DoF [a]
-  | AtomF Text
-  deriving (Show, Functor, Foldable, Traversable)
-
-
-type instance Base Ast = AstF
-
-instance R.Recursive Ast where
-  project (Fn name xs) = FnF name xs
-  project (Do xs) = DoF xs
-  project (Atom name) = AtomF name
-
-instance R.Corecursive Ast where
-  embed (FnF name xs) = Fn name xs
-  embed (DoF xs) = Do xs
-  embed (AtomF name) = Atom name
-
-
-
-
-
-
-
-
-
--------------------------------------------------------------------------------
--- Bash
--------------------------------------------------------------------------------
 
 data Bash
   = InitLocal Text (Maybe Bash)
@@ -137,7 +97,7 @@ instance R.Corecursive Bash where
 
 
 renderBash :: Bash -> P.Doc
-renderBash (String l) = P.dquotes (P.textStrict (bashStringEscapes l))
+renderBash (String inp) = P.dquotes $ P.textStrict (bashStringEscapes inp)
 
 renderBash (InitLocal label inital) = case inital of
   Nothing               -> "local" <+> P.textStrict label
@@ -239,9 +199,12 @@ renderPathCases' xs = "case" <+> "$1" <+> "in" <$$> P.indent 4 body <$$> "esac"
 
 bashStringEscapes :: Text -> Text
 bashStringEscapes txt = txt
-  -- & Text.replace "\\" (Text.pack ['\\', '\\'])
   & Text.replace "\"" (Text.pack ['\\', '"'])
-  & Text.replace "?" "\\?"
+  -- & Text.replace "\\" (Text.pack ['\\', '\\'])
+
+
+-- useSingleQuotes :: Text -> Bool
+-- useSingleQuotes = not . Text.any (== '\'')
 
 
 

@@ -1,7 +1,6 @@
-module Commands.Compile (
+module Bash.Passes (
     runCompiler
 ) where
-
 
 import Core
 import Data.Foldable
@@ -50,38 +49,33 @@ import qualified Data.Generics.Uniplate.Data as Uni
 
 
 -- + Local
-import Commands.Data
-import Commands.Parser (parseContents)
+import qualified Syntax.Data   as Syntax
+import qualified Syntax.Passes as Syntax
+import Bash.Data
 
 
 
--- Testing...
-run :: IO ()
-run = do
-  result <- runCompiler
-  case result of
-    Left err -> Text.putStrLn err
-    Right (out, env) ->
-      Text.putStrLn out
 
+-------------------------------------------------------------------------------
+-- Compiler
+-------------------------------------------------------------------------------
 
 runCompiler :: IO (Either Text (Text, Mappings))
 runCompiler = do
-  result <- parseContents "./Commands"
+  result <- Syntax.compiler
   case result of
     Left err -> return $ Left err
     Right ast -> Right <$> compile ast
 
 
-compile :: [Ast] -> IO (Text, Mappings)
+-- |
+-- Helper for 'runCompiler'.
+compile :: [Syntax.Ast] -> IO (Text, Mappings)
 compile ast = do
-  let (bash, env) = codegen ast
+  let (bash, env) = convert ast
   out <- rendered env <$> passes bash
   return (out, env)
   where
-    passes :: [Bash] -> IO [Bash]
-    passes xs = (rewritesPure xs & rewritesIO) <&> finalize
-    
     rendered :: Mappings -> [Bash] -> Text
     rendered env body =
           Text.append header (manifest body)
@@ -94,31 +88,29 @@ compile ast = do
 
 
 -------------------------------------------------------------------------------
+-- Dev
+-------------------------------------------------------------------------------
+
+dryRun :: IO ()
+dryRun = do
+  parsed <- Syntax.compiler
+  case parsed of
+    Left err -> Text.putStrLn err
+    Right ast -> do
+      let (bash, env) = convert ast
+      out <- passes bash
+      mapM_ PP.prettyPrint out
+
+
+
+
+-------------------------------------------------------------------------------
 -- Convert
 -------------------------------------------------------------------------------
 
 
-
-gen :: Ast -> Env Bash
-gen = cataM f
-  where
-    emit :: [Bash] -> Env Text
-    emit stmts = do
-      name <- freshIdent
-      M.tell $ pure $ Def name stmts
-      return name
-    
-    f :: AstF Bash -> Env Bash
-    f (DoF xs) = do
-      name <- emit xs
-      return $ Cmd name []
-    f (FnF name args) = return $ Cmd name args
-    f (AtomF name) = return $ String name
-
-
-
-codegen :: [Ast] -> ([Bash], Mappings)
-codegen xs =
+convert :: [Syntax.Ast] -> ([Bash], Mappings)
+convert xs =
   let
     (ss, _, fns) = M.runRWS (mapM gen xs) () 0
   in
@@ -137,11 +129,36 @@ codegen xs =
         f x = return x
 
 
+-- |
+-- Helper for 'convert'
+gen :: Syntax.Ast -> Env Bash
+gen = cataM f
+  where
+    emit :: [Bash] -> Env Text
+    emit stmts = do
+      name <- freshIdent
+      M.tell $ pure $ Def name stmts
+      return name
+    
+    f :: Syntax.AstF Bash -> Env Bash
+    f (Syntax.DoF xs) = do
+      name <- emit xs
+      return $ Cmd name []
+    f (Syntax.FnF name args) = return $ Cmd name args
+    f (Syntax.AtomF name) = return $ String name
+    f (Syntax.OpF l sym r) = return $ Op l sym r
+
+
 
 
 -------------------------------------------------------------------------------
--- Bash Top-Level Rewrites
+-- Root Transformations
 -------------------------------------------------------------------------------
+
+passes :: [Bash] -> IO [Bash]
+passes xs = (rewritesPure xs & rewritesIO) <&> finalize
+
+
 
 rewritesIO :: [Bash] -> IO [Bash]
 rewritesIO = Uni.transformBiM fromMacro
@@ -150,6 +167,7 @@ rewritesPure :: [Bash] -> [Bash]
 rewritesPure xs = Uni.transformBi voidMacro xs
   & Uni.transformBi runMacro
   & Uni.transformBi bindMacro
+  & Uni.transformBi opsMacro
 
 -- | Run before rendering into text.
 finalize :: [Bash] -> [Bash]
@@ -209,6 +227,13 @@ bindMacro (Cmd name (String "<-" : String cmd : args)) =
   InitLocal name $ Just $ Cmd cmd args
 bindMacro x = x
 
+
+-- streamFnsMacro :: Bash -> Bash
+-- streamFnsMacro = 
+
+opsMacro :: Bash -> Bash
+opsMacro (Op l "|" r) = Op l "|" r
+opsMacro x = x
 
 
 

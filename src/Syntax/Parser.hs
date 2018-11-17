@@ -1,4 +1,4 @@
-module Commands.Parser (
+module Syntax.Parser (
     parseContents
 ) where
 
@@ -45,15 +45,15 @@ import Data.Generics.Uniplate.Data as Uni
 import qualified Text.Show.Prettyprint as PP
 
 -- + Local
-import Commands.Data
+import Syntax.Data
 
 
-{-# ANN module ("HLint: ignore" :: Pre.String) #-}
+
 
 
 
 parseContents :: Pre.FilePath -> IO (Either Text [Ast])
-parseContents filename = (go . (++ "\n")) <$> Sys.readFile filename
+parseContents filename = go . (++ "\n") <$> Sys.readFile filename
   where
     go file = runParser parser filename file
       & first (Text.pack . parseErrorPretty)
@@ -113,6 +113,8 @@ atomP = do
     else return $ Atom result
   where
     go = Text.pack <$> some (satisfy (not . Char.isSpace))
+
+
 
 
 -- commentP :: Parser Ast
