@@ -5,8 +5,8 @@
 command db::init do
   # Since Postgres doesn’t support something like “CREATE DATABASE IF NOT EXISTS”,
   # well just run the following command and discard the the error it will produce
-  # if already created via the `void do <code block>` function.
-  void do
+  # if already created via the `try do <code block>` function.
+  try do
     createdb my-db
   
   psql -d my-db -tc
@@ -41,7 +41,10 @@ command noop do
 
 command test do
   lorem <- echo "lorem ipsum"
-  echo $lorem
+  parallel do
+    echo "first"
+    echo "second"
+    silent echo "third"
   echo "done"
 
 

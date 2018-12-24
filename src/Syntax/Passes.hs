@@ -85,11 +85,31 @@ dryRun = do
 
 
 postparser :: [Ast] -> [Ast]
-postparser =
-  -- We don't want to apply this to top-level items
-  map (Uni.transform opsMacro)
+postparser xs = xs
+  & map (Uni.transformBi parallelMacro)
+  & sublevelPasses
 
 
+parallelMacro :: Ast -> Ast
+parallelMacro = \case
+  Fn "parallel" [Do args] -> go args
+  x -> x
+  where
+    go :: [Ast] -> Ast
+    go [x] = x
+    go (x:xs) = Op x "&" (go xs)
+
+
+
+-------------------------------------------------------------------------------
+-- Special - Post Parser transformations
+-------------------------------------------------------------------------------
+
+-- Macros We don't want to apply to top-level items
+sublevelPasses :: [Ast] -> [Ast]
+sublevelPasses = map (Uni.transform opsMacro)
+
+-- We don't want to apply this to top-level items
 opsMacro :: Ast -> Ast
 opsMacro (Fn name args)
   | hasOps args = fixOpsInArgs name args

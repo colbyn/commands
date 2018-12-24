@@ -171,7 +171,9 @@ rewritesIO :: [Bash] -> IO [Bash]
 rewritesIO = Uni.transformBiM fromMacro
 
 rewritesPure :: [Bash] -> [Bash]
-rewritesPure xs = Uni.transformBi voidMacro xs
+rewritesPure xs = xs
+  & Uni.transformBi tryMacro
+  & Uni.transformBi silentMacro
   & Uni.transformBi runMacro
   & Uni.transformBi bindMacro
   & Uni.transformBi saveFnMacro
@@ -201,10 +203,24 @@ fromMacro (Cmd "from" [String path, Cmd name []]) = do
 fromMacro x = return x
 
 
-voidMacro :: Bash -> Bash
-voidMacro (Cmd "void" [block]) = Op block "||" (String "true")
-voidMacro x = x
+tryMacro :: Bash -> Bash
+tryMacro = \case
+  Cmd "try" [block]           -> f block
+  Cmd "try" (String cmd:args) -> f (Cmd cmd args)
+  x -> x
+  where
+    f :: Bash -> Bash
+    f a = Subshell [Op a "||" (String "true")]
 
+
+silentMacro :: Bash -> Bash
+silentMacro = \case
+  Cmd "silent" [block]           -> f block
+  Cmd "silent" (String cmd:args) -> f (Cmd cmd args)
+  x -> x
+  where
+    f :: Bash -> Bash
+    f a = Subshell [Op a "&>" (String "/dev/null")]
 
 
 inlineBlocksMacro :: Bash -> Bash
