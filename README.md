@@ -5,7 +5,7 @@ See `./Commands`:
 ![example](./example.gif)
 
 
-## A perfect example featuring the AWS CLI.
+## A perfect example featuring the aws cli (i.e. because tool is incredibly VERBOSE).
 > Notice that this is basically bash + misc. conveniences like an indentation sensitive parser.
 
 ```
